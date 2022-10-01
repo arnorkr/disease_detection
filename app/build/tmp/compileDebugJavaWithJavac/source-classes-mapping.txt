@@ -1,2 +1,0 @@
-com/google/mlkit/codelab/objectdetection/BuildConfig.java
- com.google.mlkit.codelab.objectdetection.BuildConfig
