@@ -4,16 +4,16 @@
         "source": "/home/arnor/StudioProjects/mlkit-android-master/object-detection/starter/app/src/main/res/drawable/demo_img3.jpg"
     },
     {
-        "merged": "/home/arnor/StudioProjects/mlkit-android-master/object-detection/starter/app/build/intermediates/res/merged/debug/mipmap-xxhdpi_ic_launcher_round.png.flat",
-        "source": "/home/arnor/StudioProjects/mlkit-android-master/object-detection/starter/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png"
+        "merged": "/home/arnor/StudioProjects/mlkit-android-master/object-detection/starter/app/build/intermediates/res/merged/debug/drawable_ic_launcher_background.xml.flat",
+        "source": "/home/arnor/StudioProjects/mlkit-android-master/object-detection/starter/app/src/main/res/drawable/ic_launcher_background.xml"
     },
     {
         "merged": "/home/arnor/StudioProjects/mlkit-android-master/object-detection/starter/app/build/intermediates/res/merged/debug/mipmap-xxhdpi_ic_launcher.png.flat",
         "source": "/home/arnor/StudioProjects/mlkit-android-master/object-detection/starter/app/src/main/res/mipmap-xxhdpi/ic_launcher.png"
     },
     {
-        "merged": "/home/arnor/StudioProjects/mlkit-android-master/object-detection/starter/app/build/intermediates/res/merged/debug/drawable_ic_launcher_background.xml.flat",
-        "source": "/home/arnor/StudioProjects/mlkit-android-master/object-detection/starter/app/src/main/res/drawable/ic_launcher_background.xml"
+        "merged": "/home/arnor/StudioProjects/mlkit-android-master/object-detection/starter/app/build/intermediates/res/merged/debug/mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "/home/arnor/StudioProjects/mlkit-android-master/object-detection/starter/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png"
     },
     {
         "merged": "/home/arnor/StudioProjects/mlkit-android-master/object-detection/starter/app/build/intermediates/res/merged/debug/drawable_ic_camera.xml.flat",

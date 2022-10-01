@@ -30,6 +30,10 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    aaptOptions {
+        noCompress "lite"
+    }
 }
 
 dependencies {
@@ -46,4 +50,5 @@ dependencies {
 
     // MLKit
     implementation 'com.google.mlkit:object-detection:16.2.4'
+    implementation 'com.google.mlkit:image-labeling-custom:17.0.1'
 }

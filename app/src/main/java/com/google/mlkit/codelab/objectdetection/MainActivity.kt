@@ -31,11 +31,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.core.graphics.scale
 import androidx.exifinterface.media.ExifInterface
+import com.google.mlkit.common.model.LocalModel
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.objects.DetectedObject
-import com.google.mlkit.vision.objects.ObjectDetection
-import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
+import com.google.mlkit.vision.label.ImageLabel
+import com.google.mlkit.vision.label.ImageLabeling
+import com.google.mlkit.vision.label.custom.CustomImageLabelerOptions
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -108,38 +110,46 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     /**
      * ML Kit Object Detection function. We'll add ML Kit code here in the codelab.
      */
-    private fun runObjectDetection(bitmap: Bitmap) {
+    private fun analyze(bitmap: Bitmap) {
         // Step 1: create ML Kit's InputImage object
+        // 128 x 128 x 3
+        bitmap.scale(128, 128, false)
+//        bitmap.
         val image = InputImage.fromBitmap(bitmap, 0)
 
-        // Step 2: acquire detector object
-        val options = ObjectDetectorOptions.Builder()
-            .setDetectorMode(ObjectDetectorOptions.SINGLE_IMAGE_MODE)
-            .enableMultipleObjects()
-            .enableClassification()
+        val localModel = LocalModel.Builder()
+            .setAssetFilePath("tomatinator.lite")
+            // or .setAbsoluteFilePath(absolute file path to model file)
+            // or .setUri(URI to model file)
             .build()
-        val objectDetector = ObjectDetection.getClient(options)
+
+        val customImageLabelerOptions = CustomImageLabelerOptions.Builder(localModel)
+            .setConfidenceThreshold(0.0f) // 0.5
+            .setMaxResultCount(1) // object detection how many label
+            .build()
+        val labeler = ImageLabeling.getClient(customImageLabelerOptions)
+
+        // Step 2: acquire detector object
+//        val options = ObjectDetectorOptions.Builder()
+//            .setDetectorMode(ObjectDetectorOptions.SINGLE_IMAGE_MODE)
+//            .enableMultipleObjects()
+//            .enableClassification()
+//            .build()
+//        val objectDetector = ObjectDetection.getClient(options)
 
         // Step 3: feed given image to detector and setup callback
-        objectDetector.process(image)
+        Log.d(TAG, "Image: ${image.toString()}")
+        Log.d(TAG, "Height: ${image.height}")
+        Log.d(TAG, "Width: ${image.width}")
+        Log.d(TAG, "Format: ${image.format}")
+
+        labeler.process(image)
             .addOnSuccessListener {
                 // Task completed successfully
                 debugPrint(it)
 
-                // Parse ML Kit's DetectedObject and create corresponding visualization data
-                val detectedObjects = it.map { obj ->
-                    var text = "Unknown"
-
-                    // We will show the top confident detection result if it exist
-                    if (obj.labels.isNotEmpty()) {
-                        val firstLabel = obj.labels.first()
-                        text = "${firstLabel.text}, ${firstLabel.confidence.times(100).toInt()}%"
-                    }
-                    BoxWithText(obj.boundingBox, text)
-                }
-
                 // Draw the detection result on the input bitmap
-                val visualizedResult = drawDetectionResult(bitmap, detectedObjects)
+                val visualizedResult = drawDetectionResult(bitmap, it)
 
                 // Show the detection result on the app screen
                 runOnUiThread {
@@ -152,17 +162,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
     }
 
-    private fun debugPrint(detectedObjects: List<DetectedObject>) {
-        detectedObjects.forEachIndexed { index, detectedObject ->
-            val box = detectedObject.boundingBox
-
-            Log.d(TAG, "Detected object: $index")
-            Log.d(TAG, " trackingId: ${detectedObject.trackingId}")
-            Log.d(TAG, " boundingBox: (${box.left}, ${box.top}) - (${box.right},${box.bottom})")
-            detectedObject.labels.forEach {
-                Log.d(TAG, " categories: ${it.text}")
-                Log.d(TAG, " confidence: ${it.confidence}")
-            }
+    private fun debugPrint(detectedObjects: List<ImageLabel>) {
+        detectedObjects.forEachIndexed { index, image_label ->
+            Log.d(TAG, "Index: ${image_label.index}")
+            Log.d(TAG, " text: ${image_label.text}")
+            Log.d(TAG, " confidence: (${image_label.confidence})")
         }
     }
 
@@ -175,7 +179,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         tvPlaceholder.visibility = View.INVISIBLE
 
         // Run object detection and display the result
-        runObjectDetection(bitmap)
+        analyze(bitmap)
     }
 
     /**
@@ -299,7 +303,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
      */
     private fun drawDetectionResult(
             bitmap: Bitmap,
-            detectionResults: List<BoxWithText>
+            detectionResults: List<ImageLabel>
     ): Bitmap {
         val outputBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(outputBitmap)
@@ -311,8 +315,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             pen.color = Color.RED
             pen.strokeWidth = 8F
             pen.style = Paint.Style.STROKE
-            val box = it.box
-            canvas.drawRect(box, pen)
+//            val box = it.box
+//            canvas.drawRect(box, pen)
 
             val tagSize = Rect(0, 0, 0, 0)
 
@@ -323,16 +327,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             pen.textSize = MAX_FONT_SIZE
             pen.getTextBounds(it.text, 0, it.text.length, tagSize)
-            val fontSize: Float = pen.textSize * box.width() / tagSize.width()
+            val fontSize: Float = pen.textSize //* box.width() / tagSize.width()
 
             // adjust the font size so texts are inside the bounding box
             if (fontSize < pen.textSize) pen.textSize = fontSize
 
-            var margin = (box.width() - tagSize.width()) / 2.0F
-            if (margin < 0F) margin = 0F
+            // var margin = (box.width() - tagSize.width()) / 2.0F
+            // if (margin < 0F) margin = 0F
+//            canvas.drawText(
+//                it.text, box.left + margin,
+//                box.top + tagSize.height().times(1F), pen
+//            )
             canvas.drawText(
-                it.text, box.left + margin,
-                box.top + tagSize.height().times(1F), pen
+                it.text, 50.0F,
+                50.0F, pen
             )
         }
         return outputBitmap
