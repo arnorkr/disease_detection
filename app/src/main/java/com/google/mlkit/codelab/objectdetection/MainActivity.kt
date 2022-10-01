@@ -33,6 +33,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.graphics.scale
 import androidx.exifinterface.media.ExifInterface
+import com.google.android.gms.tflite.client.TfLiteInitializationOptions
 import com.google.mlkit.common.model.LocalModel
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.label.ImageLabel
@@ -44,6 +45,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
+import org.tensorflow.lite.Interpreter
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     companion object {
@@ -114,11 +116,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         // Step 1: create ML Kit's InputImage object
         // 128 x 128 x 3
         bitmap.scale(128, 128, false)
-//        bitmap.
+
         val image = InputImage.fromBitmap(bitmap, 0)
 
+
+
         val localModel = LocalModel.Builder()
-            .setAssetFilePath("tomatinator.lite")
+            .setAssetFilePath("model.tflite")
             // or .setAbsoluteFilePath(absolute file path to model file)
             // or .setUri(URI to model file)
             .build()
