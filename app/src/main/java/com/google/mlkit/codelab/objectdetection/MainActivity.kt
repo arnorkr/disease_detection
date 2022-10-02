@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var imgSampleTwo: ImageView
     private lateinit var imgSampleThree: ImageView
     private lateinit var tvPlaceholder: TextView
+    private lateinit var tvDescription: TextView
     private lateinit var currentPhotoPath: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +73,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         imgSampleTwo = findViewById(R.id.imgSampleTwo)
         imgSampleThree = findViewById(R.id.imgSampleThree)
         tvPlaceholder = findViewById(R.id.tvPlaceholder)
+        tvDescription = findViewById(R.id.tvDescription)
 
         captureImageFab.setOnClickListener(this)
         imgSampleOne.setOnClickListener(this)
@@ -153,12 +155,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 debugPrint(it)
 
                 // Draw the detection result on the input bitmap
-                val visualizedResult = drawDetectionResult(bitmap, it)
+                //val visualizedResult = drawDetectionResult(bitmap, it)
+                tvDescription.text = "Label: ${it[0].text}, Confidence: ${it[0].confidence}";
 
                 // Show the detection result on the app screen
-                runOnUiThread {
-                    inputImageView.setImageBitmap(visualizedResult)
-                }
+//                runOnUiThread {
+//                    inputImageView.setImageBitmap(visualizedResult)
+//                }
             }
             .addOnFailureListener {
                 // Task failed with an exception
